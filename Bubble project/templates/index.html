@@ -1,0 +1,489 @@
+{% extends "base.html" %} 
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'comment.css' %}" />
+<link rel="stylesheet" href="{% static 'style.css' %}" />
+<body class="theme-test">
+ 
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand" href="#" onclick="toggleSidebar()">
+      {% if user.is_authenticated %}
+      <img
+        src="{{ user.userprofile.profile_image.url }}"
+        alt="Profile image"
+        class="img-fluid rounded-circle"
+        style="width: 50px; height: 50px"
+      />
+      {% else %}
+      <img 
+        src="{{ user.userprofile.profile_image|default:'media/profile_images/default.png' }}"
+        alt="Profile image"
+        class="img-fluid rounded-circle"
+        style="width:50px; height:50px"
+      
+      >
+
+      {% endif %}
+    </a>
+    <div class="mx-auto">
+      <img
+        src="{% static 'img/logo.svg' %}"
+        alt="Logo"
+        style="width: 75px; height: 75px"
+        class="rounded-circle"
+      />
+    </div>
+    <a
+      class="navbar-brand"
+      href="{% url 'photo' %}"
+      style="
+        background-color: var(--icon-shading);
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <i class="fas fa-camera"></i>
+    </a>
+  </nav>
+
+  <!-- Other navbar and sidebar code -->
+  <div
+    class="sidebar-box"
+    style="
+      position: absolute;
+      top: 62px;
+      left: 0px;
+      width: 1000px;
+      height: 102.5%;
+      z-index: 1;
+      padding-top: 20px;
+      transition: all 0.3s ease-in-out;
+    "
+  >
+    <div class="container-fluid" id="sidebar" style="display: none">
+      <div class="row flex-nowrap">
+        <div class="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
+          <div
+            class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100"
+          >
+            
+            <div class="dropdown pb-4">
+              <a
+                href="#"
+                class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                id="dropdownUser1"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <img
+                  src="{{ user.userprofile.profile_image.url }}"
+                  alt="Profile image"
+                  width="30"
+                  height="30"
+                  class="rounded-circle"
+                />
+                <span class="d-none d-sm-inline mx-1">@{{user.username}}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="#">New project...</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+              </ul>
+            </div>
+            <ul
+              class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
+              id="menu"
+            >
+              <li class="nav-item">
+                {% if user.is_authenticated %}
+                  <a href="{% url 'profile' user.username %}" class="nav-link align-middle px-0">
+                {% endif %}
+                  <i class="fs-4 bi-house"></i>
+                  <span class="ms-1 d-none d-sm-inline">Home</span>
+                </a>
+              </li>
+              <li>
+                {% if user.is_authenticated %}
+              
+                  <a href="{% url 'profile' user.username %}" class="nav-link px-0 align-middle">
+                {% endif %}
+                  <i class="fs-4 bi-speedometer2"></i>
+                  <span class="ms-1 d-none d-sm-inline">Profile</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="nav-link px-0 align-middle">
+                  <i class="fs-4 bi-table"></i>
+                  <span class="ms-1 d-none d-sm-inline">Topics</span></a
+                >
+              </li>
+              <li>
+                <a href="#submenu2" class="nav-link px-0 align-middle">
+                  <i class="fs-4 bi-bootstrap"></i>
+                  <span class="ms-1 d-none d-sm-inline">Bubbles</span></a
+                >
+              </li>
+              <li>
+                <a
+                  href="#submenu3"
+                  data-bs-toggle="collapse"
+                  class="nav-link px-0 align-middle"
+                >
+                  <i class="fs-4 bi-grid"></i>
+                  <span class="ms-1 d-none d-sm-inline">Saved</span>
+                </a>
+                <ul
+                  class="collapse nav flex-column ms-1"
+                  id="submenu3"
+                  data-bs-parent="#menu"
+                ></ul>
+              </li>
+              <li>
+                <a href="#" class="nav-link px-0 align-middle">
+                  <i class="fs-4 bi-people"></i>
+                  <span class="ms-1 d-none d-sm-inline">Follower requests</span>
+                </a>
+              </li>
+              <li>
+                <div class="dropdown">
+                  <button
+                    class="btn btn-secondary dropdown-toggle"
+                    type="button"
+                    id="customise-dropdown"
+                  >
+                    Customize
+                  </button>
+                  <ul
+                    class="dropdown-menu"
+                    aria-labelledby="customise-dropdown"
+                  >
+                    <li>
+                      <select
+                        class="theme-select"
+                        name="theme-select"
+                        id="theme-select"
+                      >
+                        <option
+                          style="background-color: white; color: black"
+                          value="light"
+                        >
+                          Light
+                        </option>
+                        <option
+                          style="background-color: black; color: white"
+                          value="dark"
+                        >
+                          Dark
+                        </option>
+                        <option
+                          style="background-color: #2d3b57; color: white"
+                          value="blue"
+                        >
+                          Blue
+                        </option>
+                        <option
+                          style="background-color: #e75480; color: white"
+                          value="pink"
+                        >
+                          Pink
+                        </option>
+                        <option
+                          style="background-color: #301834; color: white"
+                          value="purple"
+                        >
+                          Purple
+                        </option>
+                        <option
+                          style="background-color: #3e1b14; color: white"
+                          value="brown"
+                        >
+                          Brown
+                        </option>
+                        <option
+                          style="background-color: #042c42; color: white"
+                          value="dark-blue"
+                        >
+                          light Blue
+                        </option>
+                        <option
+                          style="background-color: #172312; color: white"
+                          value="dark-green"
+                        >
+                          Green
+                        </option>
+                        <option
+                          style="background-color: #0d231d; color: white"
+                          value="light-green"
+                        >
+                          light-green
+                        </option>
+                      </select>
+                    </li>
+                  </ul>
+                </div>
+                <style>
+                  .dropdown {
+                    position: relative;
+                    display: inline-block;
+                  }
+
+                  .dropdown-menu {
+                    display: none;
+                    position: absolute;
+                    z-index: 1;
+                    min-width: auto;
+                    padding: 0;
+                    border: none;
+                    box-shadow: none;
+                  }
+
+                  .dropdown:hover .dropdown-menu {
+                    display: block;
+                  }
+
+                  .dropdown-menu select {
+                    width: 100%;
+                    padding: 0.5rem;
+                    border-radius: 0;
+                    border: none;
+                  }
+
+                  .dropdown-menu select:focus {
+                    outline: none;
+                    box-shadow: none;
+                  }
+                </style>
+              </li>
+            </ul>
+            <hr />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function toggleSidebar() {
+      var sidebar = document.getElementById("sidebar");
+      if (sidebar.style.display === "none") {
+        sidebar.style.display = "block";
+      } else {
+        sidebar.style.display = "none";
+      }
+    }
+  </script>
+  
+  <div class="container-fluid mt-3 pb-4">
+    <div class="row">
+      <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        {% for post in posts %}
+          <div class="card-container" style="margin-bottom: 80%; position: relative; z-index: 5;">
+            <div class="card" style="background-color: var(--navbar-theme); position: relative;">
+              <div class="card-front">
+                <div
+                  class="card-header"
+                  style="background-color: var(--navbar-theme)"
+                >
+                  <a href="{% url 'profile' post.user.username %}">
+                    <img
+                      src="{{ post.user.userprofile.profile_image.url }}"
+                      alt="Profile image"
+                      class="rounded-circle"
+                      style="width: 50px; height: 50px"
+                    />
+                  </a>
+                  <span class="ml-2">@{{post.user}}</span>
+                </div>
+                <div class="card-body" style="background-color: var(--navbar-theme)">
+                  {% if post.image %}
+                    <img src="{{post.image.url}}" class="img-fluid" />
+                  {% elif post.video %}
+                  <video id="video-{{post.id}}" controls autoplay muted loop class="img-fluid">
+                      <source src="{{post.video.url}}" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                    
+                  {% elif post.content %}
+                    <p>{{post.content}}</p>
+                  {% endif %}
+                </div>
+                
+                <div
+                  class="card-footer"
+                  style="background-color: var(--navbar-theme)"
+                >
+                  <a href="#"><i class="far fa-heart"></i></a>
+                  <a href="#" class="comment-icon"
+                    ><i class="far fa-comment"></i
+                  ></a>
+                  <a href="#"><i class="far fa-bookmark"></i></a>
+                </div>
+              </div>
+              <div class="card-back">
+                <div class="back-icon" style="cursor: pointer;">&times;</div>
+                <div
+                  class="card-header"
+                  style="background-color: var(--navbar-theme)"
+                >
+                  {% if post.user.userprofile.profile_image %}
+                  
+                    <a href="{% url 'profile' post.user.username %}">
+                      <img
+                        src="{{ post.user.userprofile.profile_image.url }}"
+                        alt="Profile image"
+                        class="rounded-circle"
+                        style="width: 50px; height: 50px"
+                      />
+                    </a>
+                  
+                  {% endif %}
+                  <span class="ml-2">{{post.user}}</span>
+                </div>
+                <div
+                  class="card-body"
+                  style="background-color: var(--navbar-theme)"
+                >
+                  <h5>Comments</h5>
+                  {% if not post.comments.all %}
+                    No Comments Yet
+                  {% else %}
+                    {% for comment in post.comments.all %}
+                      {{ comment.name }} - 
+                      {{ comment.date_added}}
+                      <br/>
+                      {{ comment.text }}
+                      <br/>
+                      <hr/>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+                <div
+                  class="card-footer"
+                  style="background-color: var(--navbar-theme)"
+                >
+                  <form method="POST" action="{% url 'add_comment' post.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <input
+                        type="text"
+                        name="text"
+                        class="form-control"
+                        placeholder="Add a comment"
+                        required
+                      />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                      Add Comment
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'comment.js' %}"></script>
+  <script src="{% static 'video.js' %}"></script>
+  
+  <div
+    class="fixed-bottom"
+    style="
+      background: var(--navbar-theme);
+      display: flex;
+      justify-content: space-around;
+      margin-top: 80px;
+    "
+  >
+    <nav class="navbar navbar-light">
+      <a
+        class="navbar-brand"
+        href="/"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-home"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'chat' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-comments"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'create' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-plus-circle"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'rooms' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-user-friends"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'notifications' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="bi-bell-fill"></i>
+      </a>
+    </nav>
+  </div>
+
+
+</body>
+{% endblock %}
+
+                     

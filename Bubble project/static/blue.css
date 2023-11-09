@@ -1,0 +1,24 @@
+:root {
+    --navbar-theme: #162338;
+    --content-theme: #2D3B57;
+    --sidebar-theme: #273149;
+    --icon-shading: #2E3D58;
+  }
+  
+
+
+.theme-test { background-color: var(--content-theme);
+    color:white;
+
+}
+
+.navbar{background-color: var(--navbar-theme);}
+
+.sidebar{
+  background-color:var(--sidebar-theme);
+}
+.post{
+    background-color:var(--navbar-theme);
+}
+.search-color{background-color: var(--search);
+}

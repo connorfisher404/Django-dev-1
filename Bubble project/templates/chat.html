@@ -1,0 +1,203 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% block content %}
+
+<body class="theme-test">
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand" href="#">
+      <img
+        src="{{ user.userprofile.profile_image.url|default:'media/profile_images/default.png' }}"
+        alt="User Photo"
+        class="rounded-circle"
+        style="width: 50px; height: 50px"
+      />
+    </a>
+    <div class="mx-auto">
+      <a href="/"
+        ><img
+          src="{% static 'img/logo.svg' %}"
+          alt="Logo"
+          class="rounded-circle"
+          style="width: 100px; height: 50px"
+      /></a>
+    </div>
+    <a
+      class="navbar-brand"
+      href="#"
+      style="
+        background: var(--icon-shading);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <i class="fas fa-camera"></i>
+    </a>
+  </nav>
+  <select
+    class="theme-select"
+    name="theme-select"
+    id="theme-select"
+    style="display: none"
+  >
+    <option style="background-color: white; color: black" value="light">
+      Light
+    </option>
+    <option style="background-color: black; color: white" value="dark">
+      Dark
+    </option>
+    <option style="background-color: #2d3b57; color: white" value="blue">
+      Blue
+    </option>
+    <option style="background-color: #e75480; color: white" value="pink">
+      Pink
+    </option>
+    <option style="background-color: #301834; color: white" value="purple">
+      Purple
+    </option>
+    <option style="background-color: #3e1b14; color: white" value="brown">
+      Brown
+    </option>
+    <option style="background-color: #042c42; color: white" value="dark-blue">
+      light Blue
+    </option>
+    <option style="background-color: #172312; color: white" value="dark-green">
+      Green
+    </option>
+    <option style="background-color: #0d231d; color: white" value="light-green">
+      light-green
+    </option>
+  </select>
+
+  
+
+  {% if friends %} 
+    {% for friend in friends %}
+    <div class="container mt-3">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card mb-3" style="background-color: var(--navbar-theme)">
+            <div class="card-body d-flex align-items-center">
+              <img
+                src="{{ friend.userprofile.profile_image.url|default:'/media/profile_images/default.png' }}"
+                alt="{{ friend.username  }}"
+                class="rounded-circle mr-3"
+                style="width: 100px; height: 100px"
+              />
+              <div>
+                <p class="card-text">@{{ friend.username  }}</p>
+              </div>
+              
+              <div class="ml-auto">
+                <a href="{% url 'dm' friend_username=friend.username %}" class="btn btn-primary">Chat</a>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="container mt-3">
+      <p>No friends to show. Send friend requests to connect with others!</p>
+    </div>
+  {% endif %}
+
+  <!-- Locked Footer -->
+  <div
+    class="fixed-bottom"
+    style="
+      background: var(--navbar-theme);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      bottom: 0;
+    "
+  >
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a
+        class="navbar-brand"
+        href="/"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-home"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'chat'  %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-comments"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'create' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-plus-circle"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'rooms' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-user-friends"></i>
+      </a>
+      <a
+        class="navbar-brand"
+        href="{% url 'notifications' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="bi-bell-fill"></i>
+      </a>
+    </nav>
+  </div>
+</body>
+{% endblock %}

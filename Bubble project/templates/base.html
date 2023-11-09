@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+
+    {% load static %}
+
+    
+    <link rel="stylesheet" href="{% static 'color.css' %}" />
+    <!-- <link rel="stylesheet" href="{% static 'style.css' %}" /> -->
+    
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+
+    
+
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    <select class="theme-select" name="theme-select" id="theme-select">
+      <option style="background-color: white; color: black" value="light">
+        Light
+      </option>
+      <option style="background-color: black; color: white" value="dark">
+        Dark
+      </option>
+      <option style="background-color: #2d3b57; color: white" value="blue">
+        Blue
+      </option>
+      <option style="background-color: #e75480; color: white" value="pink">
+        Pink
+      </option>
+      <option style="background-color: #301834; color: white" value="purple">
+        Purple
+      </option>
+      <option style="background-color: #3e1b14; color: white" value="brown">
+        Brown
+      </option>
+      <option style="background-color: #042c42; color: white" value="dark-blue">
+        light Blue
+      </option>
+      <option
+        style="background-color: #172312; color: white"
+        value="dark-green"
+      >
+        Green
+      </option>
+      <option
+        style="background-color: #0d231d; color: white"
+        value="light-green"
+      >
+        light-green
+      </option>
+    </select>
+
+    {% endblock %} {% block extra_scripts %}
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+      const setTheme = (theme) => {
+        document.documentElement.className = theme;
+        localStorage.setItem("theme", theme);
+      };
+
+      document
+        .getElementById("theme-select")
+        .addEventListener("change", function () {
+          setTheme(this.value);
+        });
+
+      const getTheme = () => {
+        const theme = localStorage.getItem("theme");
+        theme && setTheme(theme);
+      };
+      getTheme();
+    </script>
+    <script src="{% static 'comment.js' %}"></script>
+    
+  
+
+    {% endblock %}
+
+  </body>
+</html>

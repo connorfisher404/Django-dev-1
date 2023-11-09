@@ -1,0 +1,123 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fade-In Animation</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <!-- Custom CSS -->
+    <style>
+      .fade-in {
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        margin-top: -205px;
+      }
+      .fade-in.is-visible {
+        opacity: 1;
+      }
+
+      .notifications {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body class="notifications text-center">
+    {% for friend_request in request.user.friend_requests_received.all %}
+    <div class="friend-request">
+        <p>{{ friend_request.sender }} sent you a friend request.</p>
+        <button class="btn btn-success accept-request" data-request-id="{{ friend_request.id }}">Accept</button>
+        <button class="btn btn-danger decline-request" data-request-id="{{ friend_request.id }}">Decline</button>
+    </div>
+    {% endfor %}
+
+    <div class="container mt-5 text-center">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="image-container">
+              <a href="/"><img class="fade-in" src="{% static 'img/notifications.png' %}" height="450px" width="600px" alt="Main Image"></a>
+              <div class="water-text">
+                <h2>You're up to date</h2>
+                <h2>You're up to date</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Custom JS -->
+    <script>
+      $(document).ready(function () {
+        $(".fade-in").addClass("is-visible");
+      });
+    </script>
+
+    <script>
+      $('.accept-request').on('click', function () {
+    var requestId = $(this).data('request-id');
+    var csrf_token = "{{ csrf_token }}";
+    var requestDiv = $(this).closest('.friend-request');
+
+    $.ajax({
+        url: "/accept_friend_request/" + requestId + "/",
+        type: "POST",
+        data: {
+            csrfmiddlewaretoken: csrf_token
+        },
+        success: function (response) {
+            if (response.status == 'accepted') {
+                requestDiv.remove();
+                let username = friend_request.sender;
+                window.postMessage({type: "acceptedRequest", userId: friend_request.sender_id}, '*');
+            }
+        }
+    });
+});
+
+$('.decline-request').on('click', function () {
+    var requestId = $(this).data('request-id');
+    var csrf_token = "{{ csrf_token }}";
+    var requestDiv = $(this).closest('.friend-request');
+
+    $.ajax({
+        url: "/decline_friend_request/" + requestId + "/",
+        type: "POST",
+        data: {
+            csrfmiddlewaretoken: csrf_token
+        },
+        success: function (response) {
+            if (response.status == 'declined') {
+                requestDiv.remove();
+            }
+        }
+    });
+});
+
+    </script>
+  </body>
+</html>

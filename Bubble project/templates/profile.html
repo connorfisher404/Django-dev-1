@@ -1,0 +1,273 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'color.css' %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+      }
+
+      .modal-content {
+        margin: 15% auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+      }
+    </style>
+  </head>
+  <body class="theme-test">
+    <div class="container mt-4">
+        <div class="text-center">
+          <h2>@{{ profile_user.username }}</h2>
+        </div>
+        <div class="row">
+          <div class="col-md-4 col-sm-12 text-center">
+            {% if profile_user.userprofile.profile_image %}
+            <img
+                src="{{ profile_user.userprofile.profile_image.url }}"
+                alt="Profile Photo"
+                class="img-fluid rounded-circle"
+                style="height: 200px; width: 200px; object-fit: cover;"
+            />
+
+            {% else %}
+            <img
+              src="https://randomuser.me/api/portraits/men/11.jpg"
+              alt="Profile Photo"
+              class="img-fluid rounded-circle"
+            />
+            {% endif %}
+            <p>Posts: {{ profile_user.userprofile.posts_count }} | Following: {{ profile_user.userprofile.followers_count }} | Followers: {{ profile_user.userprofile.following_count }}</p>
+
+            <h4>{{ profile_user.first_name }} {{ profile_user.last_name }}</h4>
+            <p class="lead">{{ profile_user.userprofile.bio }}</p>
+            <p>
+              Relationship Status: {{ profile_user.userprofile.relationship_status }}
+            </p>
+            {% if request.user == profile_user %}
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary mr-2"
+              >Edit Profile</a
+            >
+            {% endif %}
+            {% if request.user != profile_user %}
+                {% if profile_user in request.user.userprofile.followers.all %}
+                    <button id="follow-btn" class="btn btn-danger mr-2" data-action="unfollow">Unfollow</button>
+                    <button id="friend-request-btn" class="btn btn-info">Send Friend Request</button>
+                {% else %}
+                    <button id="follow-btn" class="btn btn-success mr-2" data-action="follow">Follow</button>
+                {% endif %}
+            {% endif %}
+            
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+
+          </div>
+          
+        </div>
+        <div class="col-md-8 col-sm-12">
+          <h3>{{ profile_user.username }}'s Posts</h3>
+          <!-- user posts here -->
+          <div class="row">
+              {% for post in user_posts %}
+              <div class="col-md-4 mb-3">
+                {% if post.image %}
+                  <img src="{{ post.image.url }}" class="img-fluid" onclick="openModal('{{ post.image.url }}', false)" style="cursor:pointer;" />
+                {% elif post.video %}
+                  <video onclick="openModal('{{ post.video.url }}', true)" muted loop class="img-fluid" style="cursor:pointer;">
+                    <source src="{{ post.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                {% elif post.content %}
+                  <p>{{ post.content }}</p>
+                {% endif %}
+              </div>
+            {% empty %}
+              <p>No posts yet.</p>
+            {% endfor %}
+            
+          </div>
+        </div>
+      </div>
+    <div
+      class="fixed-bottom bg-light"
+      style="
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        bottom: 0;
+      "
+    >
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="/">
+          <i class="fas fa-home"></i>
+        </a>
+        <a class="navbar-brand" href="{% url 'chat' %}">
+          <i class="fas fa-comments"></i>
+        </a>
+        <a class="navbar-brand" href="{% url 'create' %}">
+          <i class="fas fa-plus-circle"></i>
+        </a>
+        <a class="navbar-brand" href="{% url 'rooms' %}">
+          <i class="fas fa-user-friends"></i>
+        </a>
+        <a class="navbar-brand" href="{% url 'notifications' %}">
+          <i class="far fa-bell"></i>
+        </a>
+      </nav>
+    </div>
+    <!-- Modal -->
+    <div id="modal" class="modal">
+      <span id="close-modal" class="close" style="color: white; cursor: pointer"
+        >&times;</span
+      >
+      <img id="modal-image" class="modal-content" />
+      <video
+        id="modal-video"
+        class="modal-content"
+        controls
+        autoplay
+        muted
+        loop
+        style="display: none"
+      >
+        <source src="" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <script>
+        var modal = document.getElementById("modal");
+        var modalImage = document.getElementById("modal-image");
+        var modalVideo = document.getElementById("modal-video");
+        var closeModal = document.getElementById("close-modal");
+      
+        function openModal(src, isVideo) {
+          if (isVideo) {
+            modalVideo.src = src;
+            modalVideo.style.display = "block";
+            modalImage.style.display = "none";
+          } else {
+            modalImage.src = src;
+            modalImage.style.display = "block";
+            modalVideo.style.display = "none";
+          }
+          modal.style.display = "block";
+        }
+      
+        closeModal.onclick = function () {
+          modal.style.display = "none";
+          modalVideo.src = ""; // Pause and remove the video source
+        };
+      
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+            modalVideo.src = ""; // Pause and remove the video source
+          }
+        };
+      </script>
+      <script>
+        $(document).ready(function () {
+    setFollowButtonState();
+
+    $('#follow-btn').on('click', function () {
+        var action = $(this).data('action');
+        var username = "{{ profile_user.username }}";
+        var csrf_token = "{{ csrf_token }}";
+
+        $.ajax({
+            url: "/follow/" + username + "/",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: csrf_token
+            },
+            success: function (response) {
+                // Reload the page after the follow/unfollow action is successful
+                location.reload();
+            }
+        });
+    });
+});
+
+function setFollowButtonState() {
+    var username = "{{ profile_user.username }}";
+    var csrf_token = "{{ csrf_token }}";
+
+    $.ajax({
+        url: "/is_following/" + username + "/",
+        type: "GET",
+        data: {
+            csrfmiddlewaretoken: csrf_token
+        },
+        success: function (response) {
+            if (response.is_following) {
+                $('#follow-btn').removeClass('btn-success').addClass('btn-danger');
+                $('#follow-btn').text('Unfollow');
+                $('#follow-btn').data('action', 'unfollow');
+            } else {
+                $('#follow-btn').removeClass('btn-danger').addClass('btn-success');
+                $('#follow-btn').text('Follow');
+                $('#follow-btn').data('action', 'follow');
+            }
+        }
+    });
+}
+
+      </script>
+      <script>
+        $('#friend-request-btn').on('click', function () {
+    var username = "{{ profile_user.username }}";
+    var csrf_token = "{{ csrf_token }}";
+
+    $.ajax({
+        url: "/send_friend_request/" + username + "/",
+        type: "POST",
+        data: {
+            csrfmiddlewaretoken: csrf_token
+        },
+        success: function (response) {
+            if (response.sent) {
+                $('#friend-request-btn').text('Friend Request Sent');
+                $('#friend-request-btn').prop('disabled', true);
+            }
+        }
+    });
+});
+
+      </script>
+      <script src="{% static 'color-theme.js' %}"></script>
+      
+
+      
+        
+      
+  </body>
+</html>

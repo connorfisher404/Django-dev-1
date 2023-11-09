@@ -1,0 +1,272 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Take a Picture</title>
+    <!-- Add any necessary CSS files or CDN links here -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'style/default.css' %}">
+    <link rel="stylesheet" href="{% static 'style/greenish.css' %}" />
+    <link rel="stylesheet" href="{% static 'style/blueish.css' %}">
+    <link rel="stylesheet" href="{% static 'style/dark.css' %}">
+    <link rel="stylesheet" href="{% static 'style/dark-green.css' %}" />
+    <link rel="stylesheet" href="{% static 'style/dark-blue.css' %}">
+    <link rel="stylesheet" href="{% static 'style/purple.css' %}">
+    <link rel="stylesheet" href="{% static 'style/brownish.css' %}">
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+
+    <style>
+      /* center video and button */
+      /* center video and button */
+      #camera {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+      }
+
+      #video {
+        width: 100%;
+        height: calc(
+          100vh - 70px
+        ); /* subtract navbar height and button height */
+        object-fit: cover;
+      }
+
+      #snap {
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 50%;
+        padding: 20px;
+        margin-top: 20px;
+        position: fixed;
+        bottom: 10px;
+      }
+
+      /* thumbnail preview */
+      #thumbnail {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        width: 100px;
+        height: 75px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+
+      /* full screen preview */
+      #preview-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        overflow: auto;
+      }
+
+      #preview-modal img {
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        display: block;
+      }
+
+      /* filter controls */
+      #filters {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 10px;
+        display: none;
+      }
+
+      #filters h3 {
+        font-size: 16px;
+        margin-top: 0;
+      }
+
+      #filters label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      #filters input[type="range"] {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body class="theme-test">
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a href="/"
+        ><img
+          src="{% static 'img/back.png' %}"
+          height="40px"
+          width="40px"
+          alt="Back"
+          class="navbar-brand"
+      /></a>
+      <div class="mx-auto">
+        <img
+          src="{% static 'img/logo.svg' %}"
+          alt="Logo"
+          style="width: 75px; height: 75px"
+          class="rounded-circle"
+        />
+      </div>
+      <a class="navbar-brand" href="/photo.html">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="30"
+          height="30"
+          fill="currentColor"
+          class="bi bi-gear"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"
+          />
+          <path
+            d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"
+          />
+        </svg>
+      </a>
+    </nav>
+
+    <div class="container-fluid p-0">
+      <div id="camera">
+        <video id="video"></video>
+
+        <button id="snap"><i class="fas fa-circle fa-3x"></i></button>
+        <img id="thumbnail" />
+      </div>
+      <div id="preview-modal"></div>
+      <div id="filters">
+        <h3>Filters</h3>
+        <label>
+          Brightness
+          <input type="range" id="brightness" min="-100" max="100" value="0" />
+        </label>
+        <label>
+          Contrast
+          <input type="range" id="contrast" min="-100" max="100" value="0" />
+        </label>
+        <label>
+          Hue
+          <input type="range" id="hue" min="-180" max="180" value="0" />
+        </label>
+        <label>
+          Saturation
+          <input type="range" id="saturation" min="-100" max="100" value="0" />
+        </label>
+        <button id="apply-filters">Apply Filters</button>
+      </div>
+    </div>
+    <!-- Add any necessary JavaScript files
+    
+
+        <!-- Add any necessary JavaScript files -->
+    <script>
+      // Get video element
+      const video = document.getElementById("video");
+
+      // Get snap button and thumbnail
+      const snap = document.getElementById("snap");
+      const thumbnail = document.getElementById("thumbnail");
+
+      // Get preview modal
+      const previewModal = document.getElementById("preview-modal");
+
+      // Get filter controls
+      const filters = document.getElementById("filters");
+      const brightness = document.getElementById("brightness");
+      const contrast = document.getElementById("contrast");
+      const hue = document.getElementById("hue");
+      const saturation = document.getElementById("saturation");
+      const applyFiltersBtn = document.getElementById("apply-filters");
+
+      // Check for camera support
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Get video stream
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            // Set video source and play
+            video.srcObject = stream;
+            video.play();
+          })
+          .catch((error) => {
+            console.error("Could not get camera stream: ", error);
+          });
+
+        // Snap photo
+        snap.addEventListener("click", () => {
+          // Create canvas element and set dimensions to video element
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+
+          // Draw video frame onto canvas
+          const context = canvas.getContext("2d");
+          context.drawImage(video, 0, 0);
+
+          // Get data URL of canvas image
+          const dataURL = canvas.toDataURL("image/png");
+
+          // Set thumbnail source to data URL and show thumbnail
+          thumbnail.src = dataURL;
+          thumbnail.style.display = "block";
+
+          // Show filter controls
+          filters.style.display = "block";
+        });
+
+        // Preview photo on click
+        thumbnail.addEventListener("click", () => {
+          // Create new image element and set source to thumbnail source
+          const previewImg = document.createElement("img");
+          previewImg.src = thumbnail.src;
+
+          // Set preview modal content to image element and show modal
+          previewModal.innerHTML = "";
+          previewModal.appendChild(previewImg);
+
+          previewModal.style.display = "block";
+        });
+
+        // Apply filters
+        applyFiltersBtn.addEventListener("click", () => {
+          // Get filter values
+          const brightnessVal = brightness.value;
+          const contrastVal = contrast.value;
+          const hueVal = hue.value;
+          const saturationVal = saturation.value;
+
+          // Apply filters to thumbnail
+          thumbnail.style.filter = `brightness(${brightnessVal}%) contrast(${contrastVal}%) hue-rotate(${hueVal}deg) saturate(${saturationVal}%)`;
+
+          // Hide filters
+          filters.style.display = "none";
+        });
+      } else {
+        console.error("Camera not supported");
+      }
+    </script>
+  </body>
+</html>

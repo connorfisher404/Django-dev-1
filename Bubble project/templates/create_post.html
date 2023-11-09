@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a class="navbar-brand" href="#" onclick="toggleSidebar()">
+        {% if user.is_authenticated %}
+        <img
+          src="{{ user.userprofile.profile_image.url }}"
+          alt="Profile image"
+          class="rounded-circle"
+          style="width: 50px; height: 50px"
+        />
+        {% endif %}
+      </a>
+      <div class="mx-auto">
+        <img
+          src="{% static 'img/logo.svg' %}"
+          alt="Logo"
+          style="width: 75px; height: 75px"
+          class="rounded-circle"
+        />
+      </div>
+      <a
+        class="navbar-brand"
+        href="{% url 'photo' %}"
+        style="
+          background-color: var(--icon-shading);
+          border-radius: 50%;
+          width: 35px;
+          height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <i class="fas fa-camera"></i>
+      </a>
+    </nav>
+
+    <div class="container mt-4">
+      <h2>Create a new post</h2>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %} {{ form.as_p }}
+        <div class="form-group">
+          <label for="{{ form.content.auto_id }}">Content:</label>
+          {{ form.content }}
+          <div id="char-counter"></div>
+        </div>
+        <div class="form-group">
+          <label for="{{ form.image.auto_id }}">Image:</label>
+          {{ form.image }}
+        </div>
+        <div class="form-group">
+          <label for="{{ form.video.auto_id }}">Video:</label>
+          {{ form.video }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      const contentField = document.querySelector(
+        "#{{ form.content.auto_id }}"
+      );
+      const charCounter = document.querySelector("#char-counter");
+
+      contentField.addEventListener("input", () => {
+        charCounter.textContent = contentField.value.length + "/140";
+      });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    
+  </body>
+</html>

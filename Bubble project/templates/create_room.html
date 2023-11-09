@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<body class="theme-test">
+    <select
+    class="theme-select"
+    name="theme-select"
+    id="theme-select"
+    style="display: none"
+  >
+    <option style="background-color: white; color: black" value="light">
+      Light
+    </option>
+    <option style="background-color: black; color: white" value="dark">
+      Dark
+    </option>
+    <option style="background-color: #2d3b57; color: white" value="blue">
+      Blue
+    </option>
+    <option style="background-color: #e75480; color: white" value="pink">
+      Pink
+    </option>
+    <option style="background-color: #301834; color: white" value="purple">
+      Purple
+    </option>
+    <option style="background-color: #3e1b14; color: white" value="brown">
+      Brown
+    </option>
+    <option style="background-color: #042c42; color: white" value="dark-blue">
+      light Blue
+    </option>
+    <option style="background-color: #172312; color: white" value="dark-green">
+      Green
+    </option>
+    <option style="background-color: #0d231d; color: white" value="light-green">
+      light-green
+    </option>
+  </select>
+    <div class="container my-5">
+      <h1>Create a new chat room</h1>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="name">Room Name</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="image">Image</label>
+          <input type="file" class="form-control-file" id="image" name="image">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="is_private" name="is_private">
+          <label class="form-check-label" for="is_private">Private room</label>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Create</button>
+      </form>
+    </div>
+</body>
+{% endblock %}

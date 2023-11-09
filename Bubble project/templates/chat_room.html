@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <style>
+    .text-bar {
+      display: flex;
+      align-items: center;
+      flex-grow:1;
+      justify-content: space-between;
+      width:100%;
+      height: 50%;
+    }
+
+    .text-bar input {
+      flex-grow: 1;
+      margin-right: 10px;
+     
+    
+    }
+    .messages-container {
+      height: 400px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+  </style>
+  <body class="theme-test" style="padding-top: 80px;">
+    <nav
+      class="navbar navbar-expand-lg navbar-light fixed-top "
+      style="display: flex"
+    >
+      <a class="navbar-brand" href="/" style="margin-right: 20px">
+        <img
+          src="{% static 'img/logo.svg' %}"
+          width="60"
+          height="60"
+          class="d-inline-block align-top rounded-circle"
+          alt="Logo"
+        />
+      </a>
+      <a
+        class="navbar-brand"
+        href=""
+        style="margin-left: 20px; margin-right: 20px"
+      >
+        <img
+          alt="Joined rooms"
+          src="{% static 'img/apple2.jfif' %}"
+          width="40"
+          height="40"
+          class="d-inline-block align-top rounded-circle"
+          alt=""
+        />
+      </a>
+      <a
+        class="navbar-brand"
+        href="#"
+        style="margin-left: 20px; margin-right: 20px"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="40"
+          height="40"
+          fill="currentColor"
+          class="bi bi-plus-circle"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
+          />
+          <path
+            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
+          />
+        </svg>
+      </a>
+      <a class="navbar-brand" href="/rooms.html" style="margin-left: 20px">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="40"
+          height="40"
+          fill="currentColor"
+          class="bi bi-compass-fill"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M15.5 8.516a7.5 7.5 0 1 1-9.462-7.24A1 1 0 0 1 7 0h2a1 1 0 0 1 .962 1.276 7.503 7.503 0 0 1 5.538 7.24zm-3.61-3.905L6.94 7.439 4.11 12.39l4.95-2.828 2.828-4.95z"
+          />
+        </svg>
+      </a>
+    </nav>
+    <select
+    class="theme-select"
+    name="theme-select"
+    id="theme-select"
+    style="display: none"
+  >
+    <option style="background-color: white; color: black" value="light">
+      Light
+    </option>
+    <option style="background-color: black; color: white" value="dark">
+      Dark
+    </option>
+    <option style="background-color: #2d3b57; color: white" value="blue">
+      Blue
+    </option>
+    <option style="background-color: #e75480; color: white" value="pink">
+      Pink
+    </option>
+    <option style="background-color: #301834; color: white" value="purple">
+      Purple
+    </option>
+    <option style="background-color: #3e1b14; color: white" value="brown">
+      Brown
+    </option>
+    <option style="background-color: #042c42; color: white" value="dark-blue">
+      light Blue
+    </option>
+    <option style="background-color: #172312; color: white" value="dark-green">
+      Green
+    </option>
+    <option style="background-color: #0d231d; color: white" value="light-green">
+      light-green
+    </option>
+  </select>
+    <!-- Your navbar content -->
+
+    <div class="container">
+      <h1>{{ chat_room.name }}</h1>
+      <hr />
+
+      <div class="messages-container">
+        {% for message in messages %}
+          <div class="row">
+            <img src="{{ message.user.userprofile.profile_image.url }}" alt="User Profile Image" class="profile-img rounded-circle" style="width: 40px; height: 40px" />
+            <div class="message-content">
+              <p>
+                <strong>{{ message.user.username }}</strong>
+                <span class="date">{{ message.timestamp|date:"F j, Y" }}</span>
+              </p>
+              <p>{{ message.content }}</p>
+            </div>
+          </div>
+          <hr>
+        {% empty %}
+          <p>No messages in this chat room.</p>
+          <hr>
+        {% endfor %}
+      </div>
+
+      <div class="container">
+        <div class="text-bar">
+          <form method="post">
+            {% csrf_token %}
+            <input class="search" style="background-color: var(--search);" type="text" name="{{ form.content.name }}" placeholder="Type your message here..." />
+            <button class='search' style="background-color: var(--search); color: black;" type="submit">Send</button>
+          </form>
+        </div>
+      </div>
+    
+
+    <!-- Your JavaScript files and CDN links -->
+  </body>
+{% endblock %}
